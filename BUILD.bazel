@@ -1,0 +1,11 @@
+load("//build/bazel:pipeline.bzl", "native_pipeline")
+
+native_pipeline(
+    name = "pipeline",
+    srcs = glob(["backend/**", "frontend/**", "deploy/**", "catalog/**", "*.md"], exclude = ["frontend/node_modules/**", "frontend/dist/**"]),
+    outs = ["dist/v2ui-release.tar.gz", "dist/v2ui-release.tar.gz.sha256"],
+    script = "//build/bazel:ci.sh",
+)
+
+filegroup(name = "ci", srcs = [":pipeline"])
+filegroup(name = "release", srcs = [":pipeline"])

@@ -1,0 +1,38 @@
+# Version control and CI metadata
+.git
+.gitignore
+.jj
+.github
+
+# Node dependencies and previous build output
+node_modules
+**/node_modules
+frontend/dist
+
+# Bazel
+.bazel*
+bazel-*
+BUILD.bazel
+MODULE.bazel
+MODULE.bazel.lock
+build/bazel
+
+# Local secrets and agent scratch. .env is the developer's own file and must
+# never enter a build context.
+.env
+.env.*
+.agents
+.claude
+tasks
+
+# Documentation and design artifacts
+docs
+catalog
+*.md
+*.html
+*.png
+*.jpeg
+
+# Local binaries and logs
+v2ui-backend
+*.log

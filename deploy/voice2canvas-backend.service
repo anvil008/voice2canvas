@@ -1,0 +1,15 @@
+[Unit]
+Description=voice2canvas voice dashboard backend (ADK Go)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=%h/repos/voice2canvas/backend
+EnvironmentFile=%h/repos/voice2canvas/.env
+ExecStart=%h/repos/voice2canvas/backend/bin/voice2canvas-server
+Restart=on-failure
+RestartSec=3
+
+[Install]
+WantedBy=default.target

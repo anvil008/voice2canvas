@@ -1,0 +1,80 @@
+name: Docker
+
+# The container image is production. `compose/apps/v2ui/compose.yaml` in
+# anvil008/forge pins a tag published here, and forge's `compose-deploy`
+# recreates the project on VM 200. The pin is `latest`, which does not change
+# when the image behind it does, so the `deploy` job below is what makes a
+# merge to main reach the VM.
+
+on:
+  push:
+    branches: [main]
+    tags: ["v*"]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  docker:
+    name: Build container image
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GitHub Container Registry
+        if: github.event_name == 'push'
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract Docker metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ghcr.io/anvil008/v2ui
+          # latest=false keeps `latest` under the control of the type=raw entry
+          # below, which is main-only. The default, latest=auto, would also move
+          # `latest` onto every release tag.
+          flavor: latest=false
+          # type=ref,event=tag is what actually gives a release an immutable
+          # tag: releases here are dated (vYYYY.MM.DD[.N]), which is not valid
+          # semver, so metadata-action warns and skips the type=semver entries.
+          # They are kept so a future semver tag also lands as x.y.z and x.y.
+          tags: |
+            type=raw,value=latest,enable=${{ github.ref == 'refs/heads/main' }}
+            type=ref,event=tag
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=sha,enable=true,prefix=,format=short
+
+      - name: Build and push container image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: ${{ github.event_name == 'push' }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  deploy:
+    # Tag pushes and pull requests build an image but never move `latest`, which is
+    # what the compose file pins, so only main has anything to deploy. Without
+    # secrets.FORGE_DEPLOY_TOKEN the reusable workflow warns and passes.
+    needs: docker
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    uses: anvil008/forge/.github/workflows/app-deploy.yml@main
+    with:
+      vm: apps
+      app: v2ui
+    secrets:
+      forge_token: ${{ secrets.FORGE_DEPLOY_TOKEN }}

@@ -1,0 +1,51 @@
+name: Deploy
+
+# Retired: this workflow does not ship anything any more.
+#
+# Production for V2UI is the container image that
+# `.github/workflows/docker.yml` builds and pushes to
+# `ghcr.io/anvil008/v2ui`. It is deployed by forge's `compose-deploy`
+# workflow, which recreates the Compose project on VM 200 (`apps`,
+# 10.0.20.200) when `compose/apps/v2ui/compose.yaml` changes on forge's
+# `main`. Shipping a version is therefore a tag bump in that file — Renovate
+# proposes it, a human merges it — and not a run of anything here. The
+# procedure is forge `docs/runbooks/compose-deploy.md`.
+#
+# The release-tarball path this workflow used to drive is retired as of
+# 2026-09-08: it called forge's reusable `deploy.yml`, which ran
+# `deploy/deploy-release.sh` on CT 160 to scp/ssh into a `DEPLOY_HOST`
+# repository variable that named CT 110. CT 110 is stopped.
+# `deploy/deploy-release.sh`, `deploy/install-production.sh` and
+# `deploy/rollback-production.sh` are kept as the record of that path and are
+# no longer executed by anything.
+#
+# The dispatch below exists only so that a stale bookmark or an old runbook
+# step fails loudly and says where deployment moved, instead of appearing to
+# succeed while doing nothing.
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  retired:
+    name: Deployment moved to forge compose-deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Report where production ships from
+        run: |
+          {
+            echo '## This workflow no longer deploys V2UI'
+            echo
+            echo 'Production is the container image ghcr.io/anvil008/v2ui, built by'
+            echo '.github/workflows/docker.yml and deployed to VM 200 (apps,'
+            echo '10.0.20.200) by forge compose-deploy.'
+            echo
+            echo 'To ship a version, bump the image tag in'
+            echo 'compose/apps/v2ui/compose.yaml in anvil008/forge and merge.'
+            echo 'See forge docs/runbooks/compose-deploy.md.'
+          } >>"$GITHUB_STEP_SUMMARY"
+          echo 'Deploy is retired here; nothing was deployed. See the job summary.' >&2
+          exit 1

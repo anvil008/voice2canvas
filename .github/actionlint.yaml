@@ -1,0 +1,2 @@
+self-hosted-runner:
+  labels: [self-hosted, linux, x64, forge, ct160, debian-13, native, v2ui]

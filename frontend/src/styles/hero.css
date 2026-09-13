@@ -1,0 +1,48 @@
+/* Hero greeting: Gemini-style animated gradient sweep.
+   Kept in its own file to avoid contention with styles.css. */
+
+.idle-copy h1 {
+  background: linear-gradient(
+    100deg,
+    var(--grad-blue, #217bfe) 0%,
+    var(--grad-cyan, #078efb) 22%,
+    var(--grad-violet, #ac87eb) 46%,
+    #ee4d5d 62%,
+    var(--grad-violet, #ac87eb) 78%,
+    var(--grad-blue, #217bfe) 100%
+  );
+  background-size: 300% 100%;
+  background-position: 100% 0;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  animation:
+    hero-rise 700ms cubic-bezier(0.2, 0.75, 0.25, 1) both,
+    hero-sweep 9s ease-in-out 700ms infinite;
+}
+
+@keyframes hero-rise {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+    filter: blur(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+    filter: blur(0);
+  }
+}
+
+@keyframes hero-sweep {
+  0%, 100% { background-position: 100% 0; }
+  50% { background-position: 0% 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .idle-copy h1 {
+    animation: none;
+    background-position: 50% 0;
+  }
+}

@@ -1,0 +1,14 @@
+name: voice2canvas
+version: 1.0.0
+description: APM project for voice2canvas
+author: Anvil Palamattam
+# Which agent platforms to deploy to (uncomment to pin):
+# targets:
+#   - copilot
+#   - claude
+
+dependencies:
+  apm: []
+  mcp: []
+includes: auto
+scripts: {}

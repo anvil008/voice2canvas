@@ -1,0 +1,115 @@
+:root {
+  color-scheme: light dark;
+  --font-sans: "Google Sans", "Google Sans Text", Roboto, system-ui, sans-serif;
+  --font-mono: "Roboto Mono", "SFMono-Regular", Consolas, "Liberation Mono", ui-monospace,
+    monospace;
+
+  --grad-blue: #217bfe;
+  --grad-cyan: #078efb;
+  --grad-violet: #ac87eb;
+  --grad-warm: #ee4d5d;
+  --gemini-gradient: linear-gradient(115deg, var(--grad-blue), var(--grad-cyan) 38%, var(--grad-violet));
+  --gemini-hero-gradient: linear-gradient(
+    110deg,
+    var(--grad-blue),
+    var(--grad-cyan) 32%,
+    var(--grad-violet) 68%,
+    var(--grad-warm)
+  );
+}
+
+:root[data-theme="light"] {
+  color-scheme: light;
+  --bg: #ffffff;
+  --app-background: #ffffff;
+  --app-bloom:
+    radial-gradient(ellipse 68% 58% at 50% 70%, rgb(211 227 253 / 0.66) 0%, rgb(231 239 255 / 0.32) 45%, transparent 75%),
+    radial-gradient(ellipse 38% 30% at 68% 82%, rgb(224 214 255 / 0.2), transparent 76%);
+  --app-bloom-opacity: 0.78;
+  --app-overlay: color-mix(in srgb, var(--bg) 86%, transparent);
+  --panel: #ffffff;
+  --panel2: #f0f4f9;
+  --colBg: #f0f4f9;
+  --bd: #e1e3e1;
+  --bd2: #c4c7c5;
+  --tx: #1f1f1f;
+  --mut: #444746;
+  --fnt: #747775;
+  --pri: #0b57d0;
+  --priC: #d3e3fd;
+  --onPri: #ffffff;
+  --onPriC: #041e49;
+  --priTint: #eef4ff;
+  --priBd: #a8c7fa;
+  --grn: #0d652d;
+  --grnC: #ceead6;
+  --red: #b3261e;
+  --redC: #f9dedc;
+  --pace: #b06000;
+  --purp: #7c4dba;
+  --tel: #137a72;
+  --chart1: #0b57d0;
+  --chart2: #ac87eb;
+  --chart3: #26a69a;
+  --chart4: #e59b17;
+  --grid: rgb(68 71 70 / 0.14);
+  --tline: #9aa0a6;
+  --sh: 0 1px 2px rgb(60 64 67 / 0.08);
+  --shSoft: 0 1px 2px rgb(60 64 67 / 0.06);
+  --shFloat: 0 8px 24px rgb(60 64 67 / 0.12), 0 1px 3px rgb(60 64 67 / 0.08);
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #131314;
+  --app-background: #131314;
+  --app-bloom:
+    radial-gradient(ellipse 68% 58% at 50% 70%, rgb(44 83 159 / 0.48) 0%, rgb(29 52 103 / 0.28) 42%, transparent 76%),
+    radial-gradient(ellipse 42% 34% at 62% 79%, rgb(84 62 157 / 0.18), transparent 76%);
+  --app-bloom-opacity: 0.92;
+  --app-overlay: color-mix(in srgb, var(--bg) 82%, transparent);
+  --panel: #1e1f20;
+  --panel2: #282a2c;
+  --colBg: #1e1f20;
+  --bd: #444746;
+  --bd2: #5f6368;
+  --tx: #e3e3e3;
+  --mut: #c4c7c5;
+  --fnt: #9aa0a6;
+  --pri: #a8c7fa;
+  --priC: #0842a0;
+  --onPri: #062e6f;
+  --onPriC: #e3e3e3;
+  --priTint: #1d2b43;
+  --priBd: #3f5f8f;
+  --grn: #81c995;
+  --grnC: #0d3b20;
+  --red: #f2b8b5;
+  --redC: #601410;
+  --pace: #f6b76b;
+  --purp: #c8a9f5;
+  --tel: #78d9cf;
+  --chart1: #4796e3;
+  --chart2: #ac87eb;
+  --chart3: #4db6ac;
+  --chart4: #f6b73c;
+  --grid: rgb(196 199 197 / 0.14);
+  --tline: #9aa0a6;
+  --sh: 0 1px 2px rgb(0 0 0 / 0.24);
+  --shSoft: 0 1px 2px rgb(0 0 0 / 0.2);
+  --shFloat: 0 10px 28px rgb(0 0 0 / 0.34), 0 1px 3px rgb(0 0 0 / 0.28);
+}
+
+@keyframes ddspin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes ddpulse {
+  0%, 100% { opacity: 0.35; }
+  50% { opacity: 1; }
+}
+
+@keyframes ddrise {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: none; }
+}

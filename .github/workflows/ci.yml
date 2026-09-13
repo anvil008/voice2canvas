@@ -1,0 +1,22 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    types: [opened, reopened, synchronize]
+
+permissions:
+  contents: read
+
+jobs:
+  CI:
+    uses: anvil008/forge/.github/workflows/ci.yml@main
+    secrets: inherit
+    with:
+      repo: v2ui
+      bazel_targets: "//:ci //:release"
+      timeout_minutes: 30
+      artifact_paths: |
+        bazel-bin/dist/v2ui-release.tar.gz
+        bazel-bin/dist/v2ui-release.tar.gz.sha256

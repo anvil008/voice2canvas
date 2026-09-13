@@ -1,0 +1,59 @@
+[Unit]
+Description=Voice2Canvas production service
+Documentation=https://www.freedesktop.org/software/systemd/man/257/systemd.service.html
+Wants=network-online.target
+After=network-online.target
+StartLimitIntervalSec=60s
+StartLimitBurst=3
+
+[Service]
+Type=exec
+User=v2ui
+Group=v2ui
+WorkingDirectory=/opt/v2ui/current
+UMask=0077
+EnvironmentFile=/etc/v2ui/v2ui.env
+Environment=HOME=/var/lib/v2ui
+Environment=PORT=8083
+Environment=VOICE2CANVAS_LISTEN_ADDR=0.0.0.0:8083
+Environment=V2UI_LISTEN_ADDR=0.0.0.0:8083
+ExecStart=/opt/v2ui/current/bin/v2ui-backend
+Restart=on-failure
+RestartSec=5s
+TimeoutStartSec=30s
+TimeoutStopSec=30s
+TasksMax=128
+LimitNOFILE=65536
+MemoryHigh=1536M
+MemoryMax=2G
+
+# Compatible systemd 257 hardening. ReadWritePaths is the sole host filesystem
+# write allowlist; PrivateTmp provides an isolated temporary namespace.
+NoNewPrivileges=true
+CapabilityBoundingSet=
+AmbientCapabilities=
+ProtectSystem=strict
+ReadWritePaths=/var/lib/v2ui
+ProtectHome=tmpfs
+PrivateTmp=true
+PrivateDevices=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectKernelLogs=true
+ProtectControlGroups=true
+ProtectClock=true
+ProtectHostname=true
+ProtectProc=invisible
+ProcSubset=pid
+LockPersonality=true
+MemoryDenyWriteExecute=true
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+RestrictNamespaces=true
+RestrictRealtime=true
+RestrictSUIDSGID=true
+SystemCallArchitectures=native
+SystemCallFilter=~@mount @swap @reboot @raw-io
+SystemCallErrorNumber=EPERM
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,243 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://v2ui.local/catalogs/extended/v1/components.schema.json",
+  "title": "v2ui extended catalog v1 — component definitions",
+  "description": "Validation for extended components. A component object must match exactly one $defs entry selected by its `component` field. Basic-catalog components (Card, Text, Row, Column, ...) are validated by the vendored A2UI v0.9.1 schemas and are NOT redefined here. Scalar props may be literals or {path} bindings; array props may be literal arrays or {path} bindings.",
+  "$defs": {
+    "binding": {
+      "type": "object",
+      "properties": { "path": { "type": "string", "pattern": "^/" } },
+      "required": ["path"],
+      "additionalProperties": false
+    },
+    "num": { "oneOf": [{ "type": "number" }, { "$ref": "#/$defs/binding" }] },
+    "str": { "oneOf": [{ "type": "string" }, { "$ref": "#/$defs/binding" }] },
+    "strOrNum": { "oneOf": [{ "type": "string" }, { "type": "number" }, { "$ref": "#/$defs/binding" }] },
+    "tone": { "enum": ["neutral", "positive", "negative", "warning"] },
+    "numArray": {
+      "oneOf": [
+        { "type": "array", "items": { "type": "number" } },
+        { "$ref": "#/$defs/binding" }
+      ]
+    },
+    "Stat": {
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "component": { "const": "Stat" },
+        "label": { "$ref": "#/$defs/str" },
+        "value": { "$ref": "#/$defs/strOrNum" },
+        "unit": { "$ref": "#/$defs/str" },
+        "delta": { "$ref": "#/$defs/num" },
+        "deltaLabel": { "$ref": "#/$defs/str" },
+        "tone": { "$ref": "#/$defs/tone" },
+        "spark": { "$ref": "#/$defs/numArray" }
+      },
+      "required": ["id", "component", "label", "value"],
+      "additionalProperties": false
+    },
+    "StatGroup": {
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "component": { "const": "StatGroup" },
+        "children": { "type": "array", "items": { "type": "string" }, "minItems": 1 },
+        "columns": { "type": "integer", "minimum": 1, "maximum": 4 }
+      },
+      "required": ["id", "component", "children"],
+      "additionalProperties": false
+    },
+    "LineChart": {
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "component": { "const": "LineChart" },
+        "series": {
+          "oneOf": [
+            {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "type": "object",
+                "properties": {
+                  "name": { "type": "string" },
+                  "points": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "x": { "oneOf": [{ "type": "string" }, { "type": "number" }] },
+                        "y": { "type": "number" }
+                      },
+                      "required": ["x", "y"],
+                      "additionalProperties": false
+                    }
+                  }
+                },
+                "required": ["name", "points"],
+                "additionalProperties": false
+              }
+            },
+            { "$ref": "#/$defs/binding" }
+          ]
+        },
+        "unit": { "$ref": "#/$defs/str" },
+        "height": { "type": "integer", "minimum": 80, "maximum": 480 },
+        "yMin": { "type": "number" },
+        "yMax": { "type": "number" },
+        "fill": { "type": "boolean" },
+        "xType": { "enum": ["category", "time"] }
+      },
+      "required": ["id", "component", "series"],
+      "additionalProperties": false
+    },
+    "BarChart": {
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "component": { "const": "BarChart" },
+        "categories": {
+          "oneOf": [
+            { "type": "array", "items": { "type": "string" } },
+            { "$ref": "#/$defs/binding" }
+          ]
+        },
+        "series": {
+          "oneOf": [
+            {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "type": "object",
+                "properties": {
+                  "name": { "type": "string" },
+                  "values": { "type": "array", "items": { "type": "number" } }
+                },
+                "required": ["name", "values"],
+                "additionalProperties": false
+              }
+            },
+            { "$ref": "#/$defs/binding" }
+          ]
+        },
+        "unit": { "$ref": "#/$defs/str" },
+        "height": { "type": "integer", "minimum": 80, "maximum": 480 },
+        "stacked": { "type": "boolean" },
+        "horizontal": { "type": "boolean" }
+      },
+      "required": ["id", "component", "categories", "series"],
+      "additionalProperties": false
+    },
+    "Gauge": {
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "component": { "const": "Gauge" },
+        "label": { "$ref": "#/$defs/str" },
+        "value": { "$ref": "#/$defs/num" },
+        "min": { "type": "number" },
+        "max": { "type": "number" },
+        "unit": { "$ref": "#/$defs/str" },
+        "thresholds": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "upTo": { "type": "number" },
+              "tone": { "enum": ["positive", "warning", "negative"] }
+            },
+            "required": ["upTo", "tone"],
+            "additionalProperties": false
+          }
+        }
+      },
+      "required": ["id", "component", "label", "value", "max"],
+      "additionalProperties": false
+    },
+    "ProgressBar": {
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "component": { "const": "ProgressBar" },
+        "label": { "$ref": "#/$defs/str" },
+        "value": { "$ref": "#/$defs/num" },
+        "tone": { "$ref": "#/$defs/tone" }
+      },
+      "required": ["id", "component", "value"],
+      "additionalProperties": false
+    },
+    "KeyValueList": {
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "component": { "const": "KeyValueList" },
+        "rows": {
+          "oneOf": [
+            {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "type": "object",
+                "properties": {
+                  "label": { "type": "string" },
+                  "value": { "oneOf": [{ "type": "string" }, { "type": "number" }] },
+                  "tone": { "$ref": "#/$defs/tone" }
+                },
+                "required": ["label", "value"],
+                "additionalProperties": false
+              }
+            },
+            { "$ref": "#/$defs/binding" }
+          ]
+        }
+      },
+      "required": ["id", "component", "rows"],
+      "additionalProperties": false
+    },
+    "Badge": {
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "component": { "const": "Badge" },
+        "text": { "$ref": "#/$defs/str" },
+        "tone": { "$ref": "#/$defs/tone" }
+      },
+      "required": ["id", "component", "text"],
+      "additionalProperties": false
+    },
+    "DataTable": {
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "component": { "const": "DataTable" },
+        "columns": { "type": "array", "items": { "type": "string" }, "minItems": 1 },
+        "rows": {
+          "oneOf": [
+            {
+              "type": "array",
+              "items": {
+                "type": "array",
+                "items": { "oneOf": [{ "type": "string" }, { "type": "number" }] }
+              }
+            },
+            { "$ref": "#/$defs/binding" }
+          ]
+        },
+        "align": { "type": "array", "items": { "enum": ["left", "right"] } }
+      },
+      "required": ["id", "component", "columns", "rows"],
+      "additionalProperties": false
+    }
+  },
+  "oneOf": [
+    { "$ref": "#/$defs/Stat" },
+    { "$ref": "#/$defs/StatGroup" },
+    { "$ref": "#/$defs/LineChart" },
+    { "$ref": "#/$defs/BarChart" },
+    { "$ref": "#/$defs/Gauge" },
+    { "$ref": "#/$defs/ProgressBar" },
+    { "$ref": "#/$defs/KeyValueList" },
+    { "$ref": "#/$defs/Badge" },
+    { "$ref": "#/$defs/DataTable" }
+  ]
+}
