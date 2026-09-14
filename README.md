@@ -251,3 +251,9 @@ Voice2Canvas is an experimental reference project, not a hosted service or stabl
 ## License
 
 Apache-2.0 — see [`LICENSE`](LICENSE).
+
+---
+
+## Disclaimer
+
+This is a personal project. The views, code, and opinions expressed here are my own and do not represent those of my current or past employers.
