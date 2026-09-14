@@ -250,4 +250,4 @@ Voice2Canvas is an experimental reference project, not a hosted service or stabl
 
 ## License
 
-MIT — see [`LICENSE`](LICENSE).
+Apache-2.0 — see [`LICENSE`](LICENSE).
