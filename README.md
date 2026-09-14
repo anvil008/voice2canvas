@@ -8,7 +8,7 @@ Voice2Canvas provides a clean, modular voice-to-interface pipeline with explicit
 
 ## System Architecture
 
-Voice2Canvas decouples conversational voice interaction from background UI synthesis. The live voice loop responds with sub-second latency while specialized background agents autonomously research data, generate declarative A2UI components, validate schemas, and stream updates directly to the client canvas.
+Voice2Canvas decouples conversational voice interaction from background UI synthesis. The live voice loop stays responsive while specialized background agents autonomously research data, generate declarative A2UI components, validate schemas, and stream updates directly to the client canvas.
 
 ```mermaid
 flowchart TD
@@ -100,7 +100,7 @@ flowchart TD
 
 1. **User Audio Capture & Streaming**: The browser captures 16-bit little-endian PCM audio at 16 kHz mono through the Web Audio API and streams binary frames over a full-duplex WebSocket connection. Real-time client-side audio playback buffers 24 kHz audio returned from the model, supporting instant interruption and barge-in handling.
 2. **Gemini Live Front Door**: The Go server relays audio into a bidirectional Gemini Live session (`gemini-3.1-flash-live-preview`). The live front door converses naturally and detects interface intents, executing ADK tool calls (`dispatch_task`, `list_cards`).
-3. **ADK Task Extraction & Fast Acknowledgment**: When a user asks to view or change data, `dispatch_task` records the intent (`create`, `update`, `remove`, `investigate`, `arrange`), target domain (`weather`, `markets`, `general`), and optional refresh intervals. The tool returns an immediate acknowledgment back to Gemini Live within milliseconds so voice synthesis is never blocked by downstream generation. Concurrently, the server emits `card_pending` and `task_status` frames to render responsive loading shimmers on the canvas.
+3. **ADK Task Extraction & Fast Acknowledgment**: When a user asks to view or change data, `dispatch_task` records the intent (`create`, `update`, `remove`, `investigate`, `arrange`), target domain (`weather`, `markets`, `general`), and optional refresh intervals. The tool returns an immediate acknowledgment back to Gemini Live before generation starts so voice synthesis is never blocked by downstream generation. Concurrently, the server emits `card_pending` and `task_status` frames to render responsive loading shimmers on the canvas.
 4. **Specialized Worker Agents & Card Generation**: Background tasks execute asynchronously via Google ADK v2 runners using `gemini-3.6-flash`:
    - **Weather Specialist**: Resolves geocoordinates and fetches live conditions, hourly curves, and weekly forecasts via Open-Meteo.
    - **Markets Specialist**: Fetches real-time price quotes, intraday movements, and market benchmarks via Google Search grounding.
@@ -179,12 +179,12 @@ Voice2Canvas uses Gemini Live (`gemini-3.1-flash-live-preview`) for bidirectiona
 
 ## Quick start
 
-Requirements: Go 1.26+, Node.js 22+, and a modern browser.
+Prerequisites: Go 1.26, Node 22, and a Gemini API key or the `?mock=1` keyless mode.
 
 ### Terminal 1: Frontend
 
 ```sh
-cd frontend
+cd voice2canvas/frontend
 npm ci
 npm run dev
 ```
@@ -192,7 +192,7 @@ npm run dev
 ### Terminal 2: Backend
 
 ```sh
-cd backend
+cd voice2canvas/backend
 go run ./cmd/server
 ```
 
@@ -207,6 +207,7 @@ To explore the UI without Gemini, open <https://localhost:5173/?mock=1>.
 For a shared development server, set `GEMINI_API_KEY` before starting the Go backend:
 
 ```sh
+cd voice2canvas/backend
 GEMINI_API_KEY=... go run ./cmd/server
 ```
 
@@ -219,6 +220,7 @@ When both are present, a browser-provided key applies only to that WebSocket ses
 - `frontend/` — React, Vite, audio capture/playback, A2UI renderer, and dynamic canvas
 - `backend/` — Go HTTP/WebSocket server, Gemini Live session, ADK specialists for weather, markets, research, and Go JSON schema validation
 - `catalog/` — Portable extended A2UI catalog contracts and schemas
+- `deploy/` — Example systemd units and install script for single-host Linux deployment
 - `PROTOCOL.md` — Browser/server WebSocket wire protocol specification
 - `docs/` — Operations, deployment documentation, and interface screenshots
 - `docs/screenshots/` — High-resolution interface captures of the canvas, agent roster, transcript drawer, and BYOK modal
@@ -230,9 +232,11 @@ When both are present, a browser-provided key applies only to that WebSocket ses
 Run the full automated test suite and typecheck across both frontend and backend:
 
 ```sh
-cd frontend && npm ci && npm test && npm run typecheck && npm run build
+cd voice2canvas/frontend && npm ci && npm test && npm run typecheck && npm run build
 cd ../backend && go test ./... && go vet ./... && go build ./cmd/server
 ```
+
+CI checks run the monorepo workflows at `.github/workflows/voice2canvas-ci.yml` and `.github/workflows/voice2canvas-docker.yml`.
 
 ---
 
@@ -244,7 +248,7 @@ The browser-key flow is designed for a local demo you run yourself. A deployed b
 
 ## Status
 
-Voice2Canvas is an experimental reference project, not a hosted service or stable SDK. The protocol and extended catalog are expected to evolve.
+Voice2Canvas is an experimental reference project, not a hosted service or stable SDK. The protocol and extended catalog are expected to evolve. The `deploy/` directory holds example systemd units and an install script for self-hosting on one Linux box; there is no hosted service.
 
 ---
 
