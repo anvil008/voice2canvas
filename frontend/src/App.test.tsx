@@ -26,7 +26,7 @@ describe("mock mode", () => {
     window.history.replaceState({}, "", "/?mock=1");
     render(<App />);
 
-    expect(screen.getByRole("heading", { name: /Anvil/ })).toBeTruthy();
+    expect(screen.getByRole("heading", { level: 1 })).toBeTruthy();
     expect(screen.getByLabelText("Voice2Canvas")).toBeTruthy();
     expect(screen.getByText("Voice2Canvas")).toBeTruthy();
     const transcriptToggle = screen.getByRole("button", { name: /conversation/i });
@@ -52,7 +52,7 @@ describe("mock mode", () => {
       await Promise.resolve();
       await Promise.resolve();
     });
-    expect(screen.queryByRole("heading", { name: /Anvil/ })).toBeNull();
+    expect(screen.queryByRole("heading", { level: 1 })).toBeNull();
     expect(screen.getAllByText("I created your morning briefing and suggested next steps.").length).toBeGreaterThan(0);
     expect(screen.getByTestId("dock-status-cluster").textContent)
       .toContain("Assistant · I created your morning briefing and suggested next steps.");

@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
-# Verify Voice2Canvas / V2UI production service health and optional systemd status.
+# Verify Voice2Canvas production service health and optional systemd status.
 set -euo pipefail
 
 host="127.0.0.1"
-port="8083"
+port="8080"
 check_systemd=0
 timeout=5
 
@@ -14,8 +14,8 @@ Usage:
 
 Options:
   --host HOST     Target hostname or IP (default: 127.0.0.1)
-  --port PORT     Target port (default: 8083)
-  --systemd       Verify voice2canvas.service / v2ui.service is active via systemctl
+  --port PORT     Target port (default: 8080)
+  --systemd       Verify voice2canvas.service is active via systemctl
   --timeout SEC   Curl timeout in seconds (default: 5)
   -h, --help      Show this help.
 USAGE
@@ -58,11 +58,11 @@ if (( check_systemd )); then
     echo "verify-production: systemctl not available" >&2
     exit 1
   fi
-  if ! systemctl is-active --quiet voice2canvas.service && ! systemctl is-active --quiet v2ui.service; then
-    echo "verify-production: neither voice2canvas.service nor v2ui.service is active" >&2
+  if ! systemctl is-active --quiet voice2canvas.service; then
+    echo "verify-production: voice2canvas.service is not active" >&2
     exit 1
   fi
-  echo "voice2canvas.service / v2ui.service is active"
+  echo "voice2canvas.service is active"
 fi
 
 if ! command -v curl >/dev/null 2>&1; then

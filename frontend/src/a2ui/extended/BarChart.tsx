@@ -1,6 +1,6 @@
 /**
- * Ported from Seaglass frontend/src/registry/CategoryBarChart.tsx; extended
- * minimally for multiple series, grouped/stacked bars, and both orientations.
+ * Category bar chart supporting multiple series, grouped/stacked bars,
+ * and horizontal/vertical orientations.
  */
 import { SERIES_COLORS } from "./types";
 

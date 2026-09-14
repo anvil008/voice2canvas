@@ -8,16 +8,15 @@ StartLimitBurst=3
 
 [Service]
 Type=exec
-User=v2ui
-Group=v2ui
-WorkingDirectory=/opt/v2ui/current
+User=voice2canvas
+Group=voice2canvas
+WorkingDirectory=/opt/voice2canvas/current
 UMask=0077
-EnvironmentFile=/etc/v2ui/v2ui.env
-Environment=HOME=/var/lib/v2ui
-Environment=PORT=8083
-Environment=VOICE2CANVAS_LISTEN_ADDR=0.0.0.0:8083
-Environment=V2UI_LISTEN_ADDR=0.0.0.0:8083
-ExecStart=/opt/v2ui/current/bin/v2ui-backend
+EnvironmentFile=/etc/voice2canvas/voice2canvas.env
+Environment=HOME=/var/lib/voice2canvas
+Environment=PORT=8080
+Environment=VOICE2CANVAS_LISTEN_ADDR=0.0.0.0:8080
+ExecStart=/opt/voice2canvas/current/bin/voice2canvas-server
 Restart=on-failure
 RestartSec=5s
 TimeoutStartSec=30s
@@ -33,7 +32,7 @@ NoNewPrivileges=true
 CapabilityBoundingSet=
 AmbientCapabilities=
 ProtectSystem=strict
-ReadWritePaths=/var/lib/v2ui
+ReadWritePaths=/var/lib/voice2canvas
 ProtectHome=tmpfs
 PrivateTmp=true
 PrivateDevices=true

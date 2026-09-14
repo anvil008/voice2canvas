@@ -27,7 +27,7 @@ function initialTheme(): Theme {
   const documentTheme = document.documentElement.dataset.theme;
   if (documentTheme === "light" || documentTheme === "dark") return documentTheme;
   try {
-    const saved = window.localStorage.getItem("voice2canvas_theme") || window.localStorage.getItem("peitho_theme");
+    const saved = window.localStorage.getItem("voice2canvas_theme");
     if (saved === "light" || saved === "dark") return saved;
   } catch {}
   return window.matchMedia?.("(prefers-color-scheme: dark)").matches ? "dark" : "light";
@@ -99,6 +99,10 @@ export default function App() {
         try {
           a2uiRuntime.feed(frame.messages);
         } catch (error) {
+          dispatch({
+            type: "server",
+            frame: { type: "card_removed", surfaceId: frame.surfaceId },
+          });
           dispatch({
             type: "local_status",
             message: `A2UI render error: ${errorMessage(error)}`,
@@ -260,7 +264,7 @@ export default function App() {
       return;
     }
 
-    if (!apiKey && serverAuthConfigured === false) {
+    if (!apiKeyRef.current && serverAuthConfigured === false) {
       startAfterKeyRef.current = true;
       setApiKeyOpen(true);
       return;
@@ -276,7 +280,7 @@ export default function App() {
 
     const client = clientRef.current;
     client?.connect();
-    client?.send({ type: "start", apiKey: apiKey || undefined });
+    client?.send({ type: "start", apiKey: apiKeyRef.current || undefined });
 
     try {
       await getPlayback().activate();

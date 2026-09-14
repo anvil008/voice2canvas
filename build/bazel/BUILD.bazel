@@ -1,1 +1,0 @@
-exports_files(["ci.sh", "workspace-status.sh"])

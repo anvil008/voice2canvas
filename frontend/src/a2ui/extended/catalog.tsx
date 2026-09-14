@@ -12,7 +12,8 @@ import { Stat, type StatProps } from "./Stat";
 import { StatGroup } from "./StatGroup";
 import type { Tone } from "./types";
 
-export const EXTENDED_CATALOG_ID = "https://v2ui.local/catalogs/extended/v1";
+export const EXTENDED_CATALOG_ID = "https://voice2canvas.local/catalogs/extended/v1";
+export const LEGACY_EXTENDED_CATALOG_ID = "https://v2ui.local/catalogs/extended/v1";
 
 const binding = z.object({ path: z.string().regex(/^\//) }).strict();
 const dynamicString = z.union([z.string(), binding]);

@@ -11,12 +11,23 @@ export function ApiKeyDialog({ onCancel, onSave }: ApiKeyDialogProps) {
 
   useEffect(() => {
     inputRef.current?.focus();
-  }, []);
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        onCancel();
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [onCancel]);
 
   const submit = (event: FormEvent) => {
     event.preventDefault();
     const value = apiKey.trim();
     if (value) onSave(value);
+  };
+
+  const handleTryDemo = () => {
+    window.location.search = "?mock=1";
   };
 
   return (
@@ -27,8 +38,8 @@ export function ApiKeyDialog({ onCancel, onSave }: ApiKeyDialogProps) {
         <div className="api-key-kicker">Bring your own model</div>
         <h2 id="api-key-title">Connect Gemini</h2>
         <p>
-          Paste a Gemini API key from Google AI Studio. Voice2Canvas keeps it in this tab's
-          memory, sends it only to your local backend, and clears it on reload.
+          Paste a Gemini API key from Google AI Studio. Voice2Canvas keeps it in this tab&apos;s
+          memory, sends it only to your backend for the current session, and clears it on reload.
         </p>
         <form onSubmit={submit}>
           <label htmlFor="gemini-api-key">Gemini API key</label>
@@ -44,6 +55,9 @@ export function ApiKeyDialog({ onCancel, onSave }: ApiKeyDialogProps) {
             value={apiKey}
           />
           <div className="api-key-actions">
+            <button className="api-key-demo" onClick={handleTryDemo} type="button">
+              Try Demo Mode
+            </button>
             <a href="https://aistudio.google.com/app/apikey" rel="noreferrer" target="_blank">
               Get a key
             </a>

@@ -17,4 +17,17 @@ describe("ApiKeyDialog", () => {
     fireEvent.click(save);
     expect(onSave).toHaveBeenCalledWith("test-key");
   });
+
+  it("closes when Escape key is pressed", () => {
+    const onCancel = vi.fn();
+    render(<ApiKeyDialog onCancel={onCancel} onSave={() => undefined} />);
+    fireEvent.keyDown(window, { key: "Escape" });
+    expect(onCancel).toHaveBeenCalledTimes(1);
+  });
+
+  it("renders Try Demo Mode button", () => {
+    render(<ApiKeyDialog onCancel={() => undefined} onSave={() => undefined} />);
+    const demoButton = screen.getByRole("button", { name: "Try Demo Mode" });
+    expect(demoButton).toBeTruthy();
+  });
 });

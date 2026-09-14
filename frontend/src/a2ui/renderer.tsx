@@ -29,6 +29,7 @@ import {
 import type { LayoutSlot, TaskState } from "../protocol";
 import {
   EXTENDED_CATALOG_ID,
+  LEGACY_EXTENDED_CATALOG_ID,
   EXTENDED_WARNING_COMPONENT,
   extendedComponentImplementations,
   validateExtendedComponent,
@@ -58,6 +59,16 @@ const extendedCatalog = new Catalog<ReactComponentImplementation>(
   [...basicCatalog.functions.values()],
   basicCatalog.themeSchema,
 );
+
+const legacyExtendedCatalog = new Catalog<ReactComponentImplementation>(
+  LEGACY_EXTENDED_CATALOG_ID,
+  [...basicCatalog.components.values(), ...extendedComponentImplementations],
+  [...basicCatalog.functions.values()],
+  basicCatalog.themeSchema,
+);
+
+export const isExtendedCatalog = (catalogId: string | undefined): boolean =>
+  catalogId === EXTENDED_CATALOG_ID || catalogId === LEGACY_EXTENDED_CATALOG_ID;
 
 const basicComponentNames = new Set(basicCatalog.components.keys());
 
@@ -103,7 +114,7 @@ export class A2uiRuntime {
 
   constructor(private readonly onAction: (action: UpstreamAction) => void) {
     this.processor = new MessageProcessor(
-      [protocolBasicCatalog, extendedCatalog],
+      [protocolBasicCatalog, extendedCatalog, legacyExtendedCatalog],
       (action) => this.forwardAction(action),
       { version: "v0.9.1" },
     );
@@ -123,7 +134,7 @@ export class A2uiRuntime {
           this.processor.model.deleteSurface(surfaceId);
         }
         this.extendedSurfaceIds.delete(surfaceId);
-        if (catalogId === EXTENDED_CATALOG_ID) {
+        if (isExtendedCatalog(catalogId)) {
           this.extendedSurfaceIds.add(surfaceId);
         }
       }
@@ -446,7 +457,7 @@ export function A2uiCanvas({
             const surface = runtime.getSurface(slot.surfaceId);
             return (
               <section
-                className={`surface-slot${slot.span === 2 ? " surface-slot--span-2" : ""}${surface?.catalog.id === EXTENDED_CATALOG_ID ? " surface-slot--extended" : ""}${exiting || !surface ? " surface-slot--exiting" : ""}`}
+                className={`surface-slot${slot.span === 2 ? " surface-slot--span-2" : ""}${isExtendedCatalog(surface?.catalog.id) ? " surface-slot--extended" : ""}${exiting || !surface ? " surface-slot--exiting" : ""}`}
                 key={slot.surfaceId}
                 style={{ order: slot.order }}
                 data-surface-id={slot.surfaceId}

@@ -81,6 +81,34 @@ func TestValidatorAcceptsExtendedLineChart(t *testing.T) {
 	}
 }
 
+func TestValidatorAcceptsLegacyCatalogIDAlias(t *testing.T) {
+	validator, err := NewValidator()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	messages := []map[string]any{
+		{
+			"version": Version,
+			"createSurface": map[string]any{
+				"surfaceId": "card_1",
+				"catalogId": LegacyExtendedCatalogID,
+			},
+		},
+		lineChartMessage([]any{
+			map[string]any{
+				"name": "Temperature",
+				"points": []any{
+					map[string]any{"x": "2026-08-02T00:00:00Z", "y": 18.5},
+				},
+			},
+		}),
+	}
+	if err := validator.ValidateMessages(messages); err != nil {
+		t.Fatalf("legacy catalog alias rejected: %v", err)
+	}
+}
+
 func TestValidatorRejectsLineChartWithStringY(t *testing.T) {
 	validator, err := NewValidator()
 	if err != nil {

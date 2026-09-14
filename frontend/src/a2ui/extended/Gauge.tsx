@@ -1,6 +1,6 @@
 /**
- * Ported from Seaglass frontend/src/registry/GaugeCard.tsx; adapted to bounded
- * min/max values and semantic threshold tones from the extended catalog.
+ * Gauge component with bounded min/max values and semantic threshold tones
+ * from the extended catalog.
  */
 import { clamp, formatMetric, TONE_COLOR, type Tone } from "./types";
 
@@ -28,13 +28,23 @@ export interface GaugeProps {
 }
 
 export function Gauge({ label, value, min = 0, max, unit, thresholds = [] }: GaugeProps) {
-  const range = max - min;
-  const fraction = range > 0 ? clamp((value - min) / range, 0, 1) : 0;
-  const tone = toneForGauge(value, thresholds);
+  const safeValue = value != null && !isNaN(value) ? value : null;
+  const safeMin = min != null && !isNaN(min) ? min : 0;
+  const safeMax = max != null && !isNaN(max) ? max : null;
+
+  const range = safeMax != null ? safeMax - safeMin : 0;
+  const fraction = safeValue != null && range > 0 ? clamp((safeValue - safeMin) / range, 0, 1) : 0;
+  const tone = safeValue != null ? toneForGauge(safeValue, thresholds) : "neutral";
+
+  const displayValue = safeValue != null ? safeValue.toLocaleString() : "—";
+  const displayMin = safeMin.toLocaleString();
+  const displayMax = safeMax != null ? safeMax.toLocaleString() : "—";
+  const metricTitle = safeValue != null ? formatMetric(safeValue, unit) : "—";
+
   return (
     <section className="extended-gauge" data-tone={tone}>
       <div className="extended-gauge__ring">
-        <svg viewBox={`0 0 ${SIZE} ${SIZE}`} role="img" aria-label={`${label}: ${formatMetric(value, unit)}`}>
+        <svg viewBox={`0 0 ${SIZE} ${SIZE}`} role="img" aria-label={`${label}: ${metricTitle}`}>
           <circle cx={SIZE / 2} cy={SIZE / 2} r={RADIUS} fill="none" stroke="var(--panel2)" strokeWidth="12" />
           <circle
             cx={SIZE / 2}
@@ -49,10 +59,10 @@ export function Gauge({ label, value, min = 0, max, unit, thresholds = [] }: Gau
             className="extended-gauge__value-ring"
           />
         </svg>
-        <strong title={formatMetric(value, unit)}>{value.toLocaleString()}<small>{unit}</small></strong>
+        <strong title={metricTitle}>{displayValue}<small>{unit}</small></strong>
       </div>
       <span className="extended-gauge__label" title={label}>{label}</span>
-      <span className="extended-gauge__range">{min.toLocaleString()} – {max.toLocaleString()}{unit ? ` ${unit}` : ""}</span>
+      <span className="extended-gauge__range">{displayMin} – {displayMax}{unit ? ` ${unit}` : ""}</span>
     </section>
   );
 }

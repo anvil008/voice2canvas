@@ -34,5 +34,6 @@ catalog
 *.jpeg
 
 # Local binaries and logs
-v2ui-backend
+voice2canvas-server
+voice2canvas-backend
 *.log

@@ -1,6 +1,6 @@
 /**
- * Ported from Seaglass frontend/src/registry/TimeSeriesChart.tsx; adapted to
- * the extended catalog's x/y point model, sizing, fill, and explicit domains.
+ * LineChart trend component supporting explicit domains, time/category x-axes,
+ * area fill, and multi-series line graphs.
  */
 import { useId } from "react";
 import {

@@ -84,7 +84,7 @@ describe("extended catalog rendering", () => {
         version: "v0.9.1",
         createSurface: {
           surfaceId: "card_warning",
-          catalogId: "https://v2ui.local/catalogs/extended/v1",
+          catalogId: "https://voice2canvas.local/catalogs/extended/v1",
         },
       },
       {
@@ -103,6 +103,33 @@ describe("extended catalog rendering", () => {
     render(<A2uiCanvas runtime={runtime} slots={[{ surfaceId: "card_warning", order: 0 }]} />);
     expect(screen.getByText("Unsupported extended component: PieChart")).toBeTruthy();
     expect(screen.getByText(/Invalid Stat/)).toBeTruthy();
+    runtime.dispose();
+  });
+
+  it("accepts legacy catalog ID alias", () => {
+    const runtime = new A2uiRuntime(() => undefined);
+    act(() => runtime.feed([
+      {
+        version: "v0.9.1",
+        createSurface: {
+          surfaceId: "card_legacy",
+          catalogId: "https://v2ui.local/catalogs/extended/v1",
+        },
+      },
+      {
+        version: "v0.9.1",
+        updateComponents: {
+          surfaceId: "card_legacy",
+          components: [
+            { id: "root", component: "Card", child: "stat" },
+            { id: "stat", component: "Stat", label: "Speed", value: 42 },
+          ],
+        },
+      },
+    ]));
+    render(<A2uiCanvas runtime={runtime} slots={[{ surfaceId: "card_legacy", order: 0 }]} />);
+    expect(screen.getByText("Speed")).toBeTruthy();
+    expect(screen.getByText("42")).toBeTruthy();
     runtime.dispose();
   });
 });

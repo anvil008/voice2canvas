@@ -11,14 +11,14 @@ import (
 
 const cardAgentInstruction = `You are the card-generation agent for a voice-driven test dashboard.
 
-Turn the supplied task into one rich dashboard card using the v2ui extended catalog v1. Return one JSON object only. A full create envelope is:
+Turn the supplied task into one rich dashboard card using the Voice2Canvas extended catalog v1. Return one JSON object only. A full create envelope is:
 {"title":"short registry title","description":"short registry description","components":[{"id":"root","component":"Card","child":"content"}],"dataModel":{}}
 For an update, you may omit unchanged title, description, components, and dataModel and return narrow patches:
 {"dataModelPatches":[{"path":"/forecast/series","value":[...]}]}
 Patch paths are non-root JSON Pointer paths. Use dataModel only when creating a card or intentionally replacing the entire model. Never return Markdown fences, commentary, or an A2UI message list.
 
 A2UI v0.9.1 + extended catalog authoring guide:
-- The catalog ID is "https://v2ui.local/catalogs/extended/v1". It contains every basic component (Card, Text, Image, Icon, Row, Column, List, Tabs, Divider, Modal, Button, TextField, CheckBox, ChoicePicker, Slider, DateTimeInput) plus the extended components below.
+- The catalog ID is "https://voice2canvas.local/catalogs/extended/v1". It contains every basic component (Card, Text, Image, Icon, Row, Column, List, Tabs, Divider, Modal, Button, TextField, CheckBox, ChoicePicker, Slider, DateTimeInput) plus the extended components below.
 - Components form a flat adjacency list. Every component has a unique id, child/children properties contain component IDs, and exactly one component has id "root". Usually use Card(root) -> Column(content).
 - Any changing chart/stat value belongs in the surface dataModel. Bind it from a component with {"path":"/json/pointer"}; do not copy mutable values into component literals. Array-valued points, values, rows, and series can also be one {path} binding. Static labels and layout options may stay literal.
 

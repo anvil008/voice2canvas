@@ -20,16 +20,25 @@ const (
 	// upstream v0.9.1 schema currently uses a v0_9 URL internally; both URLs
 	// are registered by NewValidator so its references remain resolvable.
 	BasicCatalogID = "https://a2ui.org/specification/v0_9_1/catalogs/basic/catalog.json"
-	// ExtendedCatalogID is the v2ui catalog used for generated dashboard cards.
+	// ExtendedCatalogID is the canonical voice2canvas catalog used for generated dashboard cards.
 	// It extends the basic catalog with charts, stats, gauges, and tables.
-	ExtendedCatalogID = "https://v2ui.local/catalogs/extended/v1"
+	ExtendedCatalogID = "https://voice2canvas.local/catalogs/extended/v1"
+	// LegacyExtendedCatalogID is accepted as a valid alias for backwards compatibility.
+	LegacyExtendedCatalogID = "https://v2ui.local/catalogs/extended/v1"
 
-	serverSchemaID       = "https://a2ui.org/specification/v0_9/server_to_client.json"
-	catalogSchemaID      = "https://a2ui.org/specification/v0_9/catalog.json"
-	basicCatalogSchemaID = "https://a2ui.org/specification/v0_9/catalogs/basic/catalog.json"
-	commonSchemaID       = "https://a2ui.org/specification/v0_9/common_types.json"
-	extendedSchemaID     = "https://v2ui.local/catalogs/extended/v1/components.schema.json"
+	serverSchemaID         = "https://a2ui.org/specification/v0_9/server_to_client.json"
+	catalogSchemaID        = "https://a2ui.org/specification/v0_9/catalog.json"
+	basicCatalogSchemaID   = "https://a2ui.org/specification/v0_9/catalogs/basic/catalog.json"
+	commonSchemaID         = "https://a2ui.org/specification/v0_9/common_types.json"
+	extendedSchemaID       = "https://voice2canvas.local/catalogs/extended/v1/components.schema.json"
+	legacyExtendedSchemaID = "https://v2ui.local/catalogs/extended/v1/components.schema.json"
 )
+
+// IsExtendedCatalog reports whether the given catalog ID matches the canonical
+// extended catalog ID or its legacy alias.
+func IsExtendedCatalog(catalogID string) bool {
+	return catalogID == ExtendedCatalogID || catalogID == LegacyExtendedCatalogID
+}
 
 var extendedComponentNames = []string{
 	"Stat",
@@ -57,11 +66,12 @@ func NewValidator() (*Validator, error) {
 	compiler := jsonschema.NewCompiler()
 
 	resources := map[string]string{
-		serverSchemaID:       "schema/server_to_client.json",
-		catalogSchemaID:      "schema/catalog.json",
-		basicCatalogSchemaID: "schema/catalog.json",
-		commonSchemaID:       "schema/common_types.json",
-		extendedSchemaID:     "schema/extended-v1.schema.json",
+		serverSchemaID:         "schema/server_to_client.json",
+		catalogSchemaID:        "schema/catalog.json",
+		basicCatalogSchemaID:   "schema/catalog.json",
+		commonSchemaID:         "schema/common_types.json",
+		extendedSchemaID:       "schema/extended-v1.schema.json",
+		legacyExtendedSchemaID: "schema/extended-v1.schema.json",
 	}
 	for location, filename := range resources {
 		if err := addJSONResource(compiler, location, filename); err != nil {

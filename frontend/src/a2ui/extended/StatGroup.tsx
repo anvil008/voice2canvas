@@ -1,6 +1,5 @@
 /**
- * Ported from Seaglass frontend/src/registry/MetricStrip.tsx; adapted to render
- * A2UI child IDs instead of registry data objects.
+ * StatGroup component rendering child Stats in a flexible grid layout.
  */
 import type { CSSProperties, ReactNode } from "react";
 

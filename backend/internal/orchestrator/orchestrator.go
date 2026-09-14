@@ -424,6 +424,12 @@ func (o *Orchestrator) HandleAction(action Action) string {
 }
 
 func (o *Orchestrator) runTask(task Task) {
+	defer func() {
+		if r := recover(); r != nil {
+			slog.Error("recovered panic in runTask", "task", task.ID, "panic", r)
+			o.emitStatus(TaskStatus{TaskID: task.ID, Status: statusFailed, Detail: fmt.Sprintf("task recovered from panic: %v", r)})
+		}
+	}()
 	select {
 	case o.semaphore <- struct{}{}:
 		defer func() { <-o.semaphore }()
@@ -1130,6 +1136,11 @@ func (o *Orchestrator) startRefresher(surfaceID, taskID, domain string, seconds 
 }
 
 func (o *Orchestrator) runRefresher(ctx context.Context, ticker refreshTicker, surfaceID string, loop *refreshLoop) {
+	defer func() {
+		if r := recover(); r != nil {
+			slog.Error("recovered panic in runRefresher", "surfaceID", surfaceID, "panic", r)
+		}
+	}()
 	defer ticker.Stop()
 	defer func() {
 		o.refreshes.mu.Lock()

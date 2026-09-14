@@ -4,17 +4,19 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#FFFFFF" />
+    <meta name="description" content="Voice-to-UI reference implementation turning live conversations into dynamic A2UI canvases." />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <script>
       (() => {
         let theme;
-        try { theme = localStorage.getItem("voice2canvas_theme") || localStorage.getItem("peitho_theme"); } catch {}
+        try { theme = localStorage.getItem("voice2canvas_theme"); } catch {}
         if (theme !== "light" && theme !== "dark") {
           theme = matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
         }
         document.documentElement.dataset.theme = theme;
       })();
     </script>
-    <title>Voice2Canvas — voice to interface</title>
+    <title>Voice2Canvas — Voice to Interface</title>
   </head>
   <body>
     <div id="root"></div>

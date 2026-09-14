@@ -1,52 +1,78 @@
-# Contributing
+# Contributing to Voice2Canvas
 
-Issues and focused pull requests are welcome. Keep protocol changes reflected
-in `PROTOCOL.md`, add tests for both accepted and rejected frames, and never
-commit credentials or captured user audio.
+Thank you for your interest in contributing to Voice2Canvas! We welcome bug reports, feature suggestions, documentation improvements, and code contributions.
 
-## Build boundary
+## Development Workflow
 
-Bazel is the only build entry point. `//:ci` and `//:release` are both filegroups over the
-single `//:pipeline` action (`build/bazel/ci.sh`), which emits `dist/v2ui-release.tar.gz`
-and its `.sha256`; the Tier-2 per-component split that nexus and swarm have has not been
-done here yet. Before opening a pull request, run the whole gate the way CI runs it:
+Voice2Canvas consists of a Go backend and a React/TypeScript frontend.
 
-```sh
-forge-bazel build //:ci --config=agent
+### Prerequisites
+
+- **Go**: 1.26 or later
+- **Node.js**: 22 or later (with npm)
+- **Git**
+
+### Fork & Branch
+
+1. Fork the repository on GitHub.
+2. Clone your fork locally:
+   ```bash
+   git clone https://github.com/<your-username>/voice2canvas.git
+   cd voice2canvas
+   ```
+3. Create a feature branch for your changes:
+   ```bash
+   git checkout -b my-feature
+   ```
+
+### Running Locally
+
+1. **Frontend development**:
+   ```bash
+   cd frontend
+   npm ci
+   npm run dev
+   ```
+
+2. **Backend development**:
+   In another terminal:
+   ```bash
+   cd backend
+   go run ./cmd/server
+   ```
+
+### Running Checks & Tests
+
+Before opening a pull request, ensure all tests and linting pass locally:
+
+**Frontend**:
+```bash
+cd frontend
+npm test
+npm run typecheck
+npm run build
 ```
 
-`forge-bazel` rsyncs the working tree to the CT160 build runner and builds there as
-`gha-v2ui`; do not run the Go or Vite gates directly on the development host. GitHub CI
-runs the same targets on CT160 with `--config=ci`. `ci` and `agent` are the only configs
-in `.bazelrc`, and it does not yet set `--disk_cache=/var/cache/bazel/disk/v2ui` or
-`--repository_cache=/var/cache/bazel/repo` — CT160's `/etc/bazel.bazelrc` deliberately
-owns no cache paths, so caching is still only the per-repo output base. CI feeds the Bazel
-build event protocol through `forge/tools/bazel-metrics` into Alloy/Loki; the "Bazel CI"
-Grafana dashboard is where duration and cache-hit rate are read.
-
-The underlying per-language commands still exist for tight local loops, but they are not
-the gate:
-
-```sh
-cd frontend && npm test && npm run build
-cd ../backend && go test ./... && go vet ./...
+**Backend**:
+```bash
+cd backend
+go test ./...
+go vet ./...
+go build ./cmd/server
 ```
 
-## Git workflow
+## Guidelines
 
-Trunk is `main`, protected by the `main-trunk` ruleset — every change lands through a pull
-request, history stays linear, commits are SSH-signed, and force-push and deletion are
-blocked. The required status check is `CI / Quality and integration gates`, which is
-`.github/workflows/ci.yml` calling the Forge CI template,
-`anvil008/forge/.github/workflows/ci.yml@main`, on pull requests and on push to `main`. A
-push to `main` runs CI and never touches production.
+- **Protocol & Schema changes**: If modifying protocol messages or the extended catalog, ensure changes are reflected in `PROTOCOL.md`, `catalog/EXTENDED_CATALOG.md`, and corresponding JSON schemas in `catalog/` and `backend/internal/a2ui/schema/`.
+- **Tests**: Include tests for both accepted and rejected behaviors (e.g., valid frames, malformed inputs, edge cases).
+- **Credentials & Privacy**: Never commit API keys, environment credentials, or recordings of user speech.
+- **Code style**: Use standard Go conventions (`gofmt`, `go vet`) and TypeScript tooling.
 
-Production ships by publishing a GitHub Release (dated tags, `vYYYY.MM.DD[.N]`;
-pre-releases are skipped), with `workflow_dispatch` on the same deploy workflow for
-redeploy, rollback and emergencies. Both triggers feed one job that re-verifies the
-resolved commit before building — an ancestor of `origin/main`, signed by a key in
-`.github/signing-keys/anvil.allowed_signers`, and carrying a successful
-`CI / Quality and integration gates`. The job declares the `production` environment, but
-on GitHub Pro that environment is an audit label rather than a reviewer gate, so
-publishing the Release is the human action that ships (forge
-`docs/adr/0001-ci-standardization.md`).
+## Submitting a Pull Request
+
+1. Push your branch to your GitHub fork:
+   ```bash
+   git push origin my-feature
+   ```
+2. Open a Pull Request against the `main` branch.
+3. Provide a clear summary of your changes, motivation, and any testing performed.

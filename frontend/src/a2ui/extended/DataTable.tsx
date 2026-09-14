@@ -1,6 +1,6 @@
 /**
- * Ported from Seaglass frontend/src/registry/DataTable.tsx; adapted from keyed
- * object rows to the extended catalog's positional columns and alignment list.
+ * DataTable component with positional columns and alignment from the
+ * extended catalog.
  */
 import type { CSSProperties } from "react";
 

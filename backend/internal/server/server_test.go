@@ -308,3 +308,50 @@ func TestAuthForStartPrefersEphemeralBrowserKey(t *testing.T) {
 		t.Fatalf("blank browser key should preserve server auth: %#v", got)
 	}
 }
+
+func TestOriginChecking(t *testing.T) {
+	req := httptest.NewRequest("GET", "http://example.com/ws", nil)
+	req.Host = "example.com"
+
+	req.Header.Del("Origin")
+	if !isOriginAllowed(req) {
+		t.Fatal("empty origin should be allowed")
+	}
+
+	req.Header.Set("Origin", "http://example.com")
+	if !isOriginAllowed(req) {
+		t.Fatal("same host origin should be allowed")
+	}
+
+	req.Header.Set("Origin", "http://evil.com")
+	if isOriginAllowed(req) {
+		t.Fatal("different origin should be rejected by default")
+	}
+
+	t.Setenv("VOICE2CANVAS_ALLOWED_ORIGINS", "http://evil.com, https://trusted.app")
+	if !isOriginAllowed(req) {
+		t.Fatal("origin in VOICE2CANVAS_ALLOWED_ORIGINS should be allowed")
+	}
+}
+
+func TestDebugCardsGate(t *testing.T) {
+	handler, err := NewHandler(Config{})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	t.Setenv("VOICE2CANVAS_DEBUG", "")
+	t.Setenv("V2UI_DEBUG", "")
+	rec := httptest.NewRecorder()
+	handler.ServeHTTP(rec, httptest.NewRequest("GET", "/debug/cards", nil))
+	if rec.Code != 404 {
+		t.Fatalf("expected 404 when debug is disabled, got %d", rec.Code)
+	}
+
+	t.Setenv("VOICE2CANVAS_DEBUG", "true")
+	rec = httptest.NewRecorder()
+	handler.ServeHTTP(rec, httptest.NewRequest("GET", "/debug/cards", nil))
+	if rec.Code != 200 {
+		t.Fatalf("expected 200 when debug is enabled, got %d", rec.Code)
+	}
+}

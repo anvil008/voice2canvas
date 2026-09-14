@@ -53,7 +53,7 @@ export const extendedWeatherCreationMessages = parseMessages([
     version: "v0.9.1",
     createSurface: {
       surfaceId: "card_weather",
-      catalogId: "https://v2ui.local/catalogs/extended/v1",
+      catalogId: "https://voice2canvas.local/catalogs/extended/v1",
     },
   },
   {
@@ -146,7 +146,7 @@ export const extendedComparisonCreationMessages = parseMessages([
     version: "v0.9.1",
     createSurface: {
       surfaceId: "card_comparison",
-      catalogId: "https://v2ui.local/catalogs/extended/v1",
+      catalogId: "https://voice2canvas.local/catalogs/extended/v1",
     },
   },
   {
@@ -189,7 +189,7 @@ export const extendedGaugeCreationMessages = parseMessages([
     version: "v0.9.1",
     createSurface: {
       surfaceId: "card_uv",
-      catalogId: "https://v2ui.local/catalogs/extended/v1",
+      catalogId: "https://voice2canvas.local/catalogs/extended/v1",
     },
   },
   {

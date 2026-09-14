@@ -24,7 +24,14 @@ interface VoiceDockProps {
 function voiceState(props: VoiceDockProps): VoiceState {
   if (props.status.tone === "error") return "error";
   if (props.isMockMode) return "demo";
-  if (props.starting || (props.started && props.connection !== "connected")) return "connecting";
+  if (props.connection === "closed" || props.health === "unavailable") return "error";
+  if (
+    props.starting ||
+    props.connection === "reconnecting" ||
+    (props.started && props.connection !== "connected")
+  ) {
+    return "connecting";
+  }
   if (!props.started) return "idle";
   return props.muted ? "muted" : "listening";
 }

@@ -10,6 +10,7 @@ import (
 	"log"
 	"net"
 	"net/http"
+	"net/url"
 	"os"
 	"strconv"
 	"strings"
@@ -116,6 +117,27 @@ func ValidateListenAddr(address string) (string, error) {
 	return address, nil
 }
 
+func isOriginAllowed(r *http.Request) bool {
+	origin := r.Header.Get("Origin")
+	if origin == "" {
+		return true
+	}
+	parsedOrigin, err := url.Parse(origin)
+	if err == nil && strings.EqualFold(parsedOrigin.Host, r.Host) {
+		return true
+	}
+	allowedOrigins := firstEnv("VOICE2CANVAS_ALLOWED_ORIGINS", "V2UI_ALLOWED_ORIGINS")
+	if allowedOrigins != "" {
+		for _, allowed := range strings.Split(allowedOrigins, ",") {
+			allowed = strings.TrimSpace(allowed)
+			if allowed == "*" || strings.EqualFold(allowed, origin) || (err == nil && strings.EqualFold(allowed, parsedOrigin.Host)) {
+				return true
+			}
+		}
+	}
+	return false
+}
+
 type handler struct {
 	cfg       Config
 	validator *a2ui.Validator
@@ -159,18 +181,18 @@ func NewHandler(cfg Config) (http.Handler, error) {
 		upgrader: websocket.Upgrader{
 			ReadBufferSize:  16 * 1024,
 			WriteBufferSize: 16 * 1024,
-			CheckOrigin: func(_ *http.Request) bool {
-				// This is a local test dashboard; deployments should put an
-				// origin policy in front of it.
-				return true
-			},
+			CheckOrigin:     isOriginAllowed,
 		},
 	}
 	mux := http.NewServeMux()
 	mux.HandleFunc("/healthz", h.healthz)
 	mux.HandleFunc("/ws", h.websocket)
 	mux.HandleFunc("/api/agents", h.agentsAPI)
-	mux.HandleFunc("/debug/cards", func(writer http.ResponseWriter, _ *http.Request) {
+	mux.HandleFunc("/debug/cards", func(writer http.ResponseWriter, request *http.Request) {
+		if os.Getenv("VOICE2CANVAS_DEBUG") != "true" && os.Getenv("V2UI_DEBUG") != "true" {
+			http.NotFound(writer, request)
+			return
+		}
 		writer.Header().Set("Content-Type", "application/json")
 		_ = json.NewEncoder(writer).Encode(listCardInventory(h.registry))
 	})
@@ -536,10 +558,8 @@ func dispatchTaskInputSchema() *jsonschema.Schema {
 
 type listCardsArgs struct{}
 
-// listCardsResponse wraps the inventory in an object: ADK's slice-return
-// fallback path proved unreliable on the live connection (the model reported
-// tool failure despite a successful handler), and object results convert
-// cleanly without hitting that fallback.
+// listCardsResponse wraps the inventory in an object so card entries
+// are structured cleanly for live tool conversion.
 type listCardsResponse struct {
 	Count int              `json:"count"`
 	Cards []listCardResult `json:"cards"`
@@ -582,6 +602,12 @@ func listCardInventory(cardRegistry *registry.Registry) []listCardResult {
 }
 
 func (c *client) forwardLiveEvents(events iter.Seq2[*session.Event, error]) {
+	defer func() {
+		if r := recover(); r != nil {
+			log.Printf("recovered panic in forwardLiveEvents: %v", r)
+			c.sendError(fmt.Sprintf("live event processing recovered from panic: %v", r), false)
+		}
+	}()
 	for event, err := range events {
 		if err != nil {
 			c.sendError("Gemini Live receive: "+err.Error(), false)
@@ -704,13 +730,19 @@ func (c *client) sendJSON(value any) {
 	}
 	c.writeMu.Lock()
 	defer c.writeMu.Unlock()
-	_ = c.conn.WriteMessage(websocket.TextMessage, data)
+	if c.conn != nil {
+		_ = c.conn.SetWriteDeadline(time.Now().Add(5 * time.Second))
+		_ = c.conn.WriteMessage(websocket.TextMessage, data)
+	}
 }
 
 func (c *client) sendBinary(data []byte) {
 	c.writeMu.Lock()
 	defer c.writeMu.Unlock()
-	_ = c.conn.WriteMessage(websocket.BinaryMessage, append([]byte(nil), data...))
+	if c.conn != nil {
+		_ = c.conn.SetWriteDeadline(time.Now().Add(5 * time.Second))
+		_ = c.conn.WriteMessage(websocket.BinaryMessage, append([]byte(nil), data...))
+	}
 }
 
 func (h *handler) addClient(client *client) {

@@ -1,6 +1,7 @@
 # Voice2Canvas Extended Card Catalog (v1)
 
-Catalog ID: `https://v2ui.local/catalogs/extended/v1`
+Catalog ID: `https://voice2canvas.local/catalogs/extended/v1`  
+Legacy Alias: `https://v2ui.local/catalogs/extended/v1`
 
 Extends the A2UI v0.9.1 **basic catalog** — every basic component (Card, Text, Image,
 Icon, Row, Column, List, Tabs, Divider, Modal, Button, TextField, CheckBox,
@@ -11,11 +12,11 @@ data-display components so cards can be genuinely rich. Machine-readable schema:
 General rules (same as basic catalog):
 - Flat adjacency list, exactly one `id: "root"` per surface, children by ID reference.
 - Any scalar prop may be a literal or a `{ "path": "/json/pointer" }` data-model
-  binding. Array-valued props (`points`, `values`, `rows`, `series`) may likewise be a
-  literal array or a `{path}` binding to an array in the data model. **Prefer bindings
+  binding. Array-valued props (`points`, `values`, `rows`, `series`, `categories`) may likewise be a
+  literal array or a `{ "path": "/json/pointer" }` binding to an array in the data model. **Prefer bindings
   for anything that may be updated later** — `updateDataModel` patches then animate
   charts in place.
-- Numbers are raw (unformatted); `unit` / `format` props control display.
+- Numbers are raw (unformatted); the `unit` prop controls display unit labels.
 
 ## Components
 
@@ -31,7 +32,7 @@ Row/grid of Stats. Props: `children` (array of Stat component IDs), `columns`
 
 ### `LineChart`
 Trend chart. Props: `series` — array of `{ "name": string, "points": [{"x": string|number,
-"y": number}] }` (or `{path}`); `unit` (string?), `height` (int?, px, default 180),
+"y": number}] }` (or `{path}`); `unit` (string?), `height` (int?, px, 80..480, default 180),
 `yMin`/`yMax` (number?, autoscale when omitted), `fill` (bool?, area fill, default
 false), `xType` (`"category"|"time"`, default category — when `"time"`, x values are
 ISO 8601 strings).
@@ -39,7 +40,7 @@ ISO 8601 strings).
 ### `BarChart`
 Comparison chart. Props: `categories` (array of strings or `{path}`), `series` — array
 of `{ "name": string, "values": [number] }` (or `{path}`); `unit` (string?),
-`height` (int?, default 180), `stacked` (bool?, default false),
+`height` (int?, px, 80..480, default 180), `stacked` (bool?, default false),
 `horizontal` (bool?, default false).
 
 ### `Gauge`
@@ -77,5 +78,6 @@ labels.
 
 ## Surface bootstrap
 
-`createSurface.catalogId` MUST be `https://v2ui.local/catalogs/extended/v1` for
-new cards. The renderer keeps supporting basic-catalog surfaces (mock fixtures).
+`createSurface.catalogId` MUST be `https://voice2canvas.local/catalogs/extended/v1` for
+new cards. The legacy catalog ID `https://v2ui.local/catalogs/extended/v1` is supported as an alias.
+The renderer keeps supporting basic-catalog surfaces (mock fixtures).

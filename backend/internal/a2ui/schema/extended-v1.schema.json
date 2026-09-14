@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://v2ui.local/catalogs/extended/v1/components.schema.json",
-  "title": "v2ui extended catalog v1 — component definitions",
+  "$id": "https://voice2canvas.local/catalogs/extended/v1/components.schema.json",
+  "title": "Voice2Canvas extended catalog v1 — component definitions",
   "description": "Validation for extended components. A component object must match exactly one $defs entry selected by its `component` field. Basic-catalog components (Card, Text, Row, Column, ...) are validated by the vendored A2UI v0.9.1 schemas and are NOT redefined here. Scalar props may be literals or {path} bindings; array props may be literal arrays or {path} bindings.",
   "$defs": {
     "binding": {

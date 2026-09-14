@@ -237,7 +237,8 @@ summary:focus-visible {
 }
 .api-key-dialog input:focus { border-color: var(--pri); box-shadow: 0 0 0 3px var(--priC); }
 .api-key-actions { display: flex; align-items: center; justify-content: flex-end; gap: 10px; margin-top: 12px; }
-.api-key-actions a { margin-right: auto; color: var(--pri); font-size: 13px; text-decoration: none; }
+.api-key-demo { color: var(--pri); background: var(--priC); margin-right: auto; }
+.api-key-actions a { color: var(--pri); font-size: 13px; text-decoration: none; }
 .api-key-actions button { border: 0; border-radius: 999px; padding: 10px 15px; font: 600 13px/1 var(--font-sans); cursor: pointer; }
 .api-key-cancel { color: var(--tx); background: transparent; }
 .api-key-save { color: var(--on-pri, #fff); background: var(--pri); }

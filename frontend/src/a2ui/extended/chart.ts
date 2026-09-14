@@ -1,6 +1,5 @@
 /**
- * Ported from Seaglass frontend/src/registry/chart.ts; adapted for extended
- * catalog domain scaling while preserving its pure SVG geometry helpers.
+ * SVG geometry and scaling utilities for extended catalog charts.
  */
 
 export interface Pt {

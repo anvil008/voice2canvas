@@ -6,9 +6,8 @@ import (
 	"time"
 )
 
-// maxSpeechHold bounds how long a finding waits for a turn that never
-// completes. Gemini Live normally emits TurnComplete, but a dropped turn would
-// otherwise wedge every later finding behind it with no visible failure.
+// maxSpeechHold provides a safety timeout for held findings if TurnComplete
+// is delayed or lost in transit.
 const maxSpeechHold = 30 * time.Second
 
 // speechQueue serializes agent findings into the live session so a result that

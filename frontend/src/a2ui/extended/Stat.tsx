@@ -1,6 +1,5 @@
 /**
- * Ported from Seaglass frontend/src/registry/StatCard.tsx (StatValue); adapted
- * as a thin extended-catalog metric with delta, unit, tone, and sparkline.
+ * Stat metric component displaying label, value, delta, tone, and optional sparkline.
  */
 import { scaleX, scaleYDomain, smoothPath } from "./chart";
 import { TONE_COLOR, type Tone } from "./types";

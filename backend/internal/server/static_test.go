@@ -78,6 +78,7 @@ func TestBackendOnlyDevelopmentWhenStaticRootIsUnset(t *testing.T) {
 }
 
 func TestProductionStaticRoutesPreserveBackendPrecedence(t *testing.T) {
+	t.Setenv("VOICE2CANVAS_DEBUG", "true")
 	root := newStaticFixture(t)
 	handler := newStaticTestHandler(t, root)
 

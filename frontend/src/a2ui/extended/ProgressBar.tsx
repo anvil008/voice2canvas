@@ -1,6 +1,5 @@
 /**
- * Ported from Seaglass frontend/src/registry/ProgressBarRow.tsx; adapted to a
- * single catalog value on the fixed 0–100 domain.
+ * ProgressBar component supporting a single catalog value on the fixed 0–100 domain.
  */
 import { clamp, TONE_COLOR, type Tone } from "./types";
 

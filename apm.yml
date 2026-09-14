@@ -1,6 +1,6 @@
 name: voice2canvas
-version: 1.0.0
-description: APM project for voice2canvas
+version: 0.1.0
+description: "Voice-to-UI reference implementation turning live conversations into dynamic A2UI canvases"
 author: Anvil Palamattam
 # Which agent platforms to deploy to (uncomment to pin):
 # targets:

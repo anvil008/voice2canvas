@@ -1,5 +1,8 @@
+// @vitest-environment jsdom
+import { render, screen } from "@testing-library/react";
+import { createElement } from "react";
 import { describe, expect, it } from "vitest";
-import { toneForGauge } from "./Gauge";
+import { Gauge, toneForGauge } from "./Gauge";
 
 describe("Gauge thresholds", () => {
   const thresholds = [
@@ -17,5 +20,17 @@ describe("Gauge thresholds", () => {
 
   it("is neutral when no thresholds are supplied", () => {
     expect(toneForGauge(4)).toBe("neutral");
+  });
+
+  it("renders safely when value or max is null/undefined", () => {
+    render(
+      createElement(Gauge, {
+        label: "Test Gauge",
+        value: undefined as unknown as number,
+        max: undefined as unknown as number,
+      }),
+    );
+    expect(screen.getByText("Test Gauge")).toBeTruthy();
+    expect(screen.getAllByText(/—/).length).toBeGreaterThan(0);
   });
 });

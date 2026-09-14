@@ -22,7 +22,7 @@ const (
 
 var fingerprintedStaticAsset = regexp.MustCompile(`[-.][A-Za-z0-9_-]{8,}\.[A-Za-z0-9]+$`)
 
-// normalizeStaticDir resolves the optional V2UI_STATIC_DIR bundle root. An
+// normalizeStaticDir resolves the optional VOICE2CANVAS_STATIC_DIR bundle root. An
 // empty value leaves static serving disabled; anything set but unusable is a
 // startup error rather than a silently backend-only process.
 func normalizeStaticDir(staticDir string) (string, error) {
@@ -32,25 +32,25 @@ func normalizeStaticDir(staticDir string) (string, error) {
 	}
 	absPath, err := filepath.Abs(staticDir)
 	if err != nil {
-		return "", fmt.Errorf("resolve V2UI_STATIC_DIR: %w", err)
+		return "", fmt.Errorf("resolve VOICE2CANVAS_STATIC_DIR: %w", err)
 	}
 	resolvedPath, err := filepath.EvalSymlinks(absPath)
 	if err != nil {
-		return "", fmt.Errorf("V2UI_STATIC_DIR is unusable: %w", err)
+		return "", fmt.Errorf("VOICE2CANVAS_STATIC_DIR is unusable: %w", err)
 	}
 	info, err := os.Stat(resolvedPath)
 	if err != nil {
-		return "", fmt.Errorf("stat V2UI_STATIC_DIR: %w", err)
+		return "", fmt.Errorf("stat VOICE2CANVAS_STATIC_DIR: %w", err)
 	}
 	if !info.IsDir() {
-		return "", fmt.Errorf("V2UI_STATIC_DIR must be a directory, got %q", staticDir)
+		return "", fmt.Errorf("VOICE2CANVAS_STATIC_DIR must be a directory, got %q", staticDir)
 	}
 	index, _, result := openStaticFile(resolvedPath, "index.html")
 	if result != staticLookupFound {
-		return "", fmt.Errorf("V2UI_STATIC_DIR must contain a readable regular index.html, got %q", staticDir)
+		return "", fmt.Errorf("VOICE2CANVAS_STATIC_DIR must contain a readable regular index.html, got %q", staticDir)
 	}
 	if err := index.Close(); err != nil {
-		return "", fmt.Errorf("close V2UI_STATIC_DIR index.html: %w", err)
+		return "", fmt.Errorf("close VOICE2CANVAS_STATIC_DIR index.html: %w", err)
 	}
 	return resolvedPath, nil
 }

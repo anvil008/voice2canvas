@@ -64,7 +64,7 @@ map of the browser, ADK live backend, worker graph, card registry, and external 
 Search, and Open-Meteo services. It is scrollable on narrow screens and closes with
 Escape or its close control.
 
-Surfaces using `https://v2ui.local/catalogs/extended/v1` can compose all basic A2UI
+Surfaces using `https://voice2canvas.local/catalogs/extended/v1` can compose all basic A2UI
 components with the extended display set: `Stat`, `StatGroup`, `LineChart`,
 `BarChart`, `Gauge`, `ProgressBar`, `KeyValueList`, `Badge`, and `DataTable`. Bindable
 values and collections react to `updateDataModel` patches, including animated chart,
