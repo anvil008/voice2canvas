@@ -34,7 +34,9 @@ RUN CGO_ENABLED=0 go build -trimpath -ldflags="-s -w" -o /usr/local/bin/voice2ca
 # Stage 3: Runtime.
 FROM debian:bookworm-slim AS runtime
 
-RUN apt-get update \
+# Keep apt as root: rootless builds cannot map gid 65534 (nogroup), which apt otherwise drops to.
+RUN echo 'APT::Sandbox::User "root";' > /etc/apt/apt.conf.d/99-rootless-build \
+    && apt-get update \
     && apt-get install -y --no-install-recommends ca-certificates curl \
     && rm -rf /var/lib/apt/lists/*
 

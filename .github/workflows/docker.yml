@@ -1,29 +1,37 @@
 name: Docker
+
 on:
   push:
     branches: [main]
-    tags: ["v*"]
+    tags: ['v*']
   pull_request:
     branches: [main]
+
 permissions:
   contents: read
   packages: write
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   docker:
     name: Build container image
-    runs-on: ubuntu-latest
+    # Fork pull requests never run on the self-hosted runner.
+    if: >-
+      github.event_name != 'pull_request' ||
+      github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: [self-hosted, linux, x64, forge, ct160, debian-13, native, voice2canvas]
+    timeout-minutes: 30
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-      - name: Log in to GitHub Container Registry
-        if: github.event_name == 'push'
-        uses: docker/login-action@v3
         with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          clean: true
+          persist-credentials: false
+
       - name: Extract Docker metadata
         id: meta
         uses: docker/metadata-action@v5
@@ -36,13 +44,54 @@ jobs:
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
             type=sha,enable=true,prefix=,format=short
-      - name: Build and push container image
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          file: Dockerfile
-          push: ${{ github.event_name == 'push' }}
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+
+      - name: Log in to GitHub Container Registry
+        if: github.event_name == 'push'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: echo "$GITHUB_TOKEN" | buildah login --username "$GITHUB_ACTOR" --password-stdin ghcr.io
+
+      - name: Build container image
+        env:
+          TAGS: ${{ steps.meta.outputs.tags }}
+          LABELS: ${{ steps.meta.outputs.labels }}
+        run: |
+          set -euo pipefail
+
+          tag_args=()
+          while IFS= read -r line; do
+            [ -z "$line" ] && continue
+            tag_args+=(-t "$line")
+          done <<< "$TAGS"
+
+          label_args=()
+          while IFS= read -r line; do
+            [ -z "$line" ] && continue
+            label_args+=(--label "$line")
+          done <<< "$LABELS"
+
+          buildah build --layers --format docker -f Dockerfile "${tag_args[@]}" "${label_args[@]}" .
+
+      - name: Push container image
+        if: github.event_name == 'push'
+        env:
+          TAGS: ${{ steps.meta.outputs.tags }}
+        run: |
+          set -euo pipefail
+
+          while IFS= read -r tag; do
+            [ -z "$tag" ] && continue
+            buildah push "$tag"
+          done <<< "$TAGS"
+
+      - name: Remove build artifacts
+        if: always()
+        env:
+          TAGS: ${{ steps.meta.outputs.tags }}
+        run: |
+          set -euo pipefail
+
+          while IFS= read -r tag; do
+            [ -z "$tag" ] && continue
+            buildah rmi "$tag" || true
+          done <<< "$TAGS"
