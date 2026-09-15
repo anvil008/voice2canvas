@@ -15,10 +15,10 @@ Voice2Canvas consists of a Go backend and a React/TypeScript frontend.
 ### Fork & Branch
 
 1. Fork the repository on GitHub.
-2. Clone your fork locally:
+2. Clone the repository locally:
    ```bash
-   git clone https://github.com/<your-username>/fieldwork.git
-   cd fieldwork/voice2canvas
+   git clone https://github.com/anvil008/voice2canvas.git
+   cd voice2canvas
    ```
 3. Create a feature branch for your changes:
    ```bash
@@ -74,5 +74,5 @@ go build ./cmd/server
    ```bash
    git push origin my-feature
    ```
-2. Open a Pull Request against the `main` branch. CI checks run the monorepo workflows at `.github/workflows/voice2canvas-ci.yml` and `.github/workflows/voice2canvas-docker.yml`.
+2. Open a Pull Request against the `main` branch of anvil008/voice2canvas. CI checks run the workflows at `.github/workflows/ci.yml` and `.github/workflows/docker.yml`.
 3. Provide a clear summary of your changes, motivation, and any testing performed.

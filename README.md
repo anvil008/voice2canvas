@@ -1,5 +1,9 @@
 # Voice2Canvas
 
+[![CI](https://github.com/anvil008/voice2canvas/actions/workflows/ci.yml/badge.svg)](https://github.com/anvil008/voice2canvas/actions/workflows/ci.yml)
+[![Docker](https://github.com/anvil008/voice2canvas/actions/workflows/docker.yml/badge.svg)](https://github.com/anvil008/voice2canvas/actions/workflows/docker.yml)
+[![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
+
 Voice2Canvas is an open reference implementation of V2UI, the voice-to-UI framework described in the paper [When voice builds the interface](https://anvilpalamattam.com/papers/when-voice-builds-the-interface/): turning a live voice conversation into a dynamic interface. A user speaks to Gemini Live, an ADK agent converts the request into bounded tasks, and those tasks generate validated A2UI cards on a responsive canvas.
 
 Voice2Canvas provides a clean, modular voice-to-interface pipeline with explicit local setup, configuration, and bring-your-own-key testing.
@@ -184,7 +188,7 @@ Prerequisites: Go 1.26, Node 22, and a Gemini API key or the `?mock=1` keyless m
 ### Terminal 1: Frontend
 
 ```sh
-cd voice2canvas/frontend
+cd frontend
 npm ci
 npm run dev
 ```
@@ -192,7 +196,7 @@ npm run dev
 ### Terminal 2: Backend
 
 ```sh
-cd voice2canvas/backend
+cd backend
 go run ./cmd/server
 ```
 
@@ -207,7 +211,7 @@ To explore the UI without Gemini, open <https://localhost:5173/?mock=1>.
 For a shared development server, set `GEMINI_API_KEY` before starting the Go backend:
 
 ```sh
-cd voice2canvas/backend
+cd backend
 GEMINI_API_KEY=... go run ./cmd/server
 ```
 
@@ -232,11 +236,11 @@ When both are present, a browser-provided key applies only to that WebSocket ses
 Run the full automated test suite and typecheck across both frontend and backend:
 
 ```sh
-cd voice2canvas/frontend && npm ci && npm test && npm run typecheck && npm run build
+cd frontend && npm ci && npm test && npm run typecheck && npm run build
 cd ../backend && go test ./... && go vet ./... && go build ./cmd/server
 ```
 
-CI checks run the monorepo workflows at `.github/workflows/voice2canvas-ci.yml` and `.github/workflows/voice2canvas-docker.yml`.
+CI checks run the workflows at `.github/workflows/ci.yml` and `.github/workflows/docker.yml`.
 
 ---
 

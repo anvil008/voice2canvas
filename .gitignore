@@ -1,10 +1,26 @@
+# Dependencies & build artifacts
 node_modules/
+**/node_modules/
 dist/
+**/dist/
+webdist/
+**/webdist/
 *.log
+.DS_Store
+
+# Environment & local secrets
 .env
 .env.*
 !.env.example
+
+# Workspaces & caches
+.jj/
+.workspaces/
+.cache/
+
+# Voice2Canvas artifacts
 backend/bin/
-backend/server
+**/backend/bin/
 .playwright-mcp/
+/bazel-*
 .dagr/

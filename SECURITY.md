@@ -1,5 +1,9 @@
 # Security
 
+## Scope and Intent
+
+Voice2Canvas contains runnable demonstrations and reference implementations, not hardened production services. It is not designed or configured for untrusted public network exposure.
+
 ## Browser-provided Gemini keys
 
 The reference frontend keeps a pasted Gemini API key only in React memory. It
@@ -18,6 +22,7 @@ rate-limiting, origin restrictions, and a secrets manager.
 
 ## Reporting a vulnerability
 
-Please open a private GitHub security advisory for the repository rather than a
+Please open a private GitHub security advisory for `anvil008/voice2canvas` at
+https://github.com/anvil008/voice2canvas/security/advisories rather than filing a
 public issue. Do not include active credentials in reports, screenshots, test
 fixtures, or logs.
